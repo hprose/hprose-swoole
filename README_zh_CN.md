@@ -1,7 +1,7 @@
 # Hprose for Swoole
 
 [![Build Status](https://travis-ci.org/hprose/hprose-swoole.svg?branch=master)](https://travis-ci.org/hprose/hprose-swoole)
-![Supported PHP versions: 5.3 .. 7.0](https://img.shields.io/badge/php-5.3~7.0-blue.svg)
+![Supported PHP versions: 5.3 .. 7.1](https://img.shields.io/badge/php-5.3~7.1-blue.svg)
 [![Packagist](https://img.shields.io/packagist/v/hprose/hprose-swoole.svg)](https://packagist.org/packages/hprose/hprose-swoole)
 [![Packagist Download](https://img.shields.io/packagist/dm/hprose/hprose-swoole.svg)](https://packagist.org/packages/hprose/hprose-swoole)
 [![License](https://img.shields.io/packagist/l/hprose/hprose-swoole.svg)](https://packagist.org/packages/hprose/hprose-swoole)
