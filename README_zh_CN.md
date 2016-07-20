@@ -6,13 +6,13 @@
 [![Packagist Download](https://img.shields.io/packagist/dm/hprose/hprose-swoole.svg)](https://packagist.org/packages/hprose/hprose-swoole)
 [![License](https://img.shields.io/packagist/l/hprose/hprose-swoole.svg)](https://packagist.org/packages/hprose/hprose-swoole)
 
-## Introduction
+## 简介
 
-*Hprose* is a High Performance Remote Object Service Engine.
+*Hprose* 是高性能远程对象服务引擎（High Performance Remote Object Service Engine）的缩写。
 
-It is a modern, lightweight, cross-language, cross-platform, object-oriented, high performance, remote dynamic communication middleware. It is not only easy to use, but powerful. You just need a little time to learn, then you can use it to easily construct cross language cross platform distributed application system.
+它是一个先进的轻量级的跨语言跨平台面向对象的高性能远程动态通讯中间件。它不仅简单易用，而且功能强大。你只需要稍许的时间去学习，就能用它轻松构建跨语言跨平台的分布式应用系统了。
 
-*Hprose* supports many programming languages, for example:
+*Hprose* 支持众多编程语言，例如：
 
 * AAuto Quicker
 * ActionScript
@@ -32,16 +32,16 @@ It is a modern, lightweight, cross-language, cross-platform, object-oriented, hi
 * Ruby
 * ...
 
-Through *Hprose*, You can conveniently and efficiently intercommunicate between those programming languages.
+通过 *Hprose*，你就可以在这些语言之间方便高效的实现互通了。
 
-This project is the implementation of Hprose for PHP based on swoole.
+本项目是基于 swoole 扩展的 Hprose 的 PHP 语言版本实现。
 
-## Installation
+## 安装
 
-### Download Source Code
-[Download Link](https://github.com/hprose/hprose-swoole/archive/master.zip)
+### 通过下载源码
+[下载地址](https://github.com/hprose/hprose-swoole/archive/master.zip)
 
-### install by `composer`
+### 通过 composer
 ```javascript
 {
     "require": {
@@ -50,15 +50,13 @@ This project is the implementation of Hprose for PHP based on swoole.
 }
 ```
 
-## Usage
+## 使用
 
-You need install [swoole](http://www.swoole.com/) first. The minimum version of [swoole](https://github.com/swoole/swoole-src) been supported is 1.8.8.
+你首先需要安装 [swoole](http://www.swoole.com/)。[swoole](https://github.com/swoole/swoole-src) 被支持的最低版本为 1.8.8.
 
-### Server
+### 服务器
 
-Hprose for PHP is very easy to use.
-
-You can create a standalone hprose http server like this:
+Hprose for PHP 使用起来很简单，例如：
 
 `http_server.php`
 ```php
@@ -124,11 +122,11 @@ You can create a standalone hprose http server like this:
     $server->start();
 ```
 
-The websocket server is also a http server.
+WebSocket 服务器同时也是 HTTP 服务器，所以既可以用 WebSocket 客户端访问，也可以用 HTTP 客户端访问。
 
 ### Client
 
-Then you can create a hprose client to invoke it like this:
+然后你可以创建一个 Hprose 的客户端来调用它了，就像这样：
 
 `http_client.php`
 ```php
@@ -184,10 +182,10 @@ Then you can create a hprose client to invoke it like this:
     });
 ```
 
-The result of invoking is a promise object, you can also specify the callback function after the arguments, the callback function supports 0 - 3 parameters:
+直接调用的结果是一个 Promise 对象，也可以在调用时直接指定回调函数，回调函数支持 0 - 3 个参数。它们分别表示：
 
-|params   |comments                                                           |
-|--------:|:------------------------------------------------------------------|
-|result   |The result is the server returned, if no result, its value is null.|
-|arguments|It is an array of arguments. if no argument, it is an empty array. |
-|error    |It is an object of Exception, if no error, its value is null.      |
+|参数    |解释                                                       |
+|-------:|:---------------------------------------------------------|
+|结果    |就是服务器端的返回结果，如果没有结果则为 null。                  |
+|调用参数|是一个包含了调用参数的数组，如果调用没有参数，则为 0 个元素的数组。 |
+|错误    |一个 Exception 对象，如果没有错误则为 null。                   |
