@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole http server library for php 5.3+         *
  *                                                        *
- * LastModified: Jul 18, 2016                             *
+ * LastModified: Jul 21, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -53,12 +53,12 @@ class Server extends Service {
     public function on($name, $callback) {
         $this->server->on($name, $callback);
     }
-    public function addListener($host, $port) {
-        $this->server->addListener($host, $port);
-    }
-    public function listen($uri) {
+    public function addListener($uri) {
         $url = $this->parseUrl($uri);
-        return $this->server->listen($url->host, $url->port, SWOOLE_SOCK_TCP);
+        $this->server->addListener($url->host, $url->port);
+    }
+    public function listen($host, $port, $type) {
+        return $this->server->listen($host, $port, $type);
     }
     public function start() {
         if (is_array($this->settings) && !empty($this->settings)) {

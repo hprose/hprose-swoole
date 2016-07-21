@@ -27,6 +27,7 @@ class Service extends \Hprose\Http\Service {
     const ORIGIN = 'origin';
     const MAX_PACK_LEN = 0x200000;
     public $settings = array();
+    public $server;
     public function __construct() {
         parent::__construct();
         $this->timer = new Timer();
