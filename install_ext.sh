@@ -5,5 +5,5 @@ phpize
 ./configure
 make
 make install
-echo "extension = libswoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+echo "extension = swoole.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 cd ..
