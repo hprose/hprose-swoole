@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole websocket service library for php 5.3+   *
  *                                                        *
- * LastModified: Jul 20, 2016                             *
+ * LastModified: Jul 21, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -24,10 +24,15 @@ namespace Hprose\Swoole\WebSocket;
 use stdClass;
 use Exception;
 use Throwable;
+use Hprose\Swoole\Timer;
 
 class Service extends \Hprose\Swoole\Http\Service {
     public $onAccept = null;
     public $onClose = null;
+    public function __construct() {
+        parent::__construct();
+        $this->timer = new Timer();
+    }
     public function onMessage($server, $fd, $data) {
         $id = substr($data, 0, 4);
         $request = substr($data, 4);

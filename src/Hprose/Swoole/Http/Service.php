@@ -14,17 +14,23 @@
  *                                                        *
  * hprose swoole http service library for php 5.3+        *
  *                                                        *
- * LastModified: Jul 18, 2016                             *
+ * LastModified: Jul 21, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
 
 namespace Hprose\Swoole\Http;
 
+use Hprose\Swoole\Timer;
+
 class Service extends \Hprose\Http\Service {
     const ORIGIN = 'origin';
     const MAX_PACK_LEN = 0x200000;
     public $settings = array();
+    public function __construct() {
+        parent::__construct();
+        $this->timer = new Timer();
+    }
     public function set($settings) {
         $this->settings = array_replace($this->settings, $settings);
     }

@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole socket service library for php 5.3+      *
  *                                                        *
- * LastModified: Jul 20, 2016                             *
+ * LastModified: Jul 21, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -24,12 +24,17 @@ namespace Hprose\Swoole\Socket;
 use stdClass;
 use Exception;
 use Throwable;
+use Hprose\Swoole\Timer;
 
 class Service extends \Hprose\Service {
     const MAX_PACK_LEN = 0x200000;
     public $settings = array();
     public $onAccept = null;
     public $onClose = null;
+    public function __construct() {
+        parent::__construct();
+        $this->timer = new Timer();
+    }
     public function set($settings) {
         $this->settings = array_replace($this->settings, $settings);
     }
