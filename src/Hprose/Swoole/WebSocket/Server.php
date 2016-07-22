@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole websocket server library for php 5.3+    *
  *                                                        *
- * LastModified: Jul 21, 2016                             *
+ * LastModified: Jul 22, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -32,9 +32,12 @@ class Server extends Service {
         if ($p) {
             switch (strtolower($p['scheme'])) {
                 case 'ws':
+                    $result->host = $p['host'];
+                    $result->port = isset($p['port']) ? $p['port'] : 80;
+                    break;
                 case 'wss':
                     $result->host = $p['host'];
-                    $result->port = $p['port'];
+                    $result->port = isset($p['port']) ? $p['port'] : 443;
                     break;
                 default:
                     throw new Exception("Can't support this scheme: {$p['scheme']}");
