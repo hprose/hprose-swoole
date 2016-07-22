@@ -22,7 +22,7 @@
 namespace Hprose\Swoole {
     class Server {
         private $server = null;
-        public function __construct($uri, $mode = SWOOLE_PROCESS) {
+        public function __construct($uri, $mode = SWOOLE_BASE) {
             $p = parse_url($uri);
             if ($p) {
                 switch (strtolower($p['scheme'])) {
