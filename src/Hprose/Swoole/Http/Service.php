@@ -35,13 +35,13 @@ class Service extends \Hprose\Http\Service {
     public function set($settings) {
         $this->settings = array_replace($this->settings, $settings);
     }
-    protected function header($name, $value, $context) {
+    public function header($name, $value, $context) {
         $context->response->header($name, $value);
     }
-    protected function getAttribute($name, $context) {
+    public function getAttribute($name, $context) {
         return $context->request->header[$name];
     }
-    protected function hasAttribute($name, $context) {
+    public function hasAttribute($name, $context) {
         return array_key_exists($name, $context->request->header);
     }
     protected function readRequest($context) {
@@ -54,7 +54,7 @@ class Service extends \Hprose\Http\Service {
         $context->response = $response;
         return $context;
     }
-    protected function writeResponse($data, $context) {
+    public function writeResponse($data, $context) {
         $response = $context->response;
         $len = strlen($data);
         if ($len <= self::MAX_PACK_LEN) {
@@ -70,10 +70,10 @@ class Service extends \Hprose\Http\Service {
         }
         return true;
     }
-    protected function isGet($context) {
+    public function isGet($context) {
         return $context->request->server['request_method'] == 'GET';
     }
-    protected function isPost($context) {
+    public function isPost($context) {
         return $context->request->server['request_method'] == 'POST';
     }
     public function httpHandle($server) {
