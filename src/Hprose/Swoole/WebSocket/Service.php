@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole websocket service library for php 5.3+   *
  *                                                        *
- * LastModified: Jul 21, 2016                             *
+ * LastModified: Jul 22, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -33,6 +33,23 @@ class Service extends \Hprose\Swoole\Http\Service {
         parent::__construct();
         $this->timer = new Timer();
     }
+    /*private*/ function wsPush($server, $fd, $data) {
+        $dataLength = strlen($data);
+        if ($dataLength <= self::MAX_PACK_LEN) {
+            return $server->push($fd, $data, WEBSOCKET_OPCODE_BINARY, true);
+        }
+        else {
+            for ($i = 0; $i < $dataLength; $i += self::MAX_PACK_LEN) {
+                $chunkLength = min($dataLength - $i, self::MAX_PACK_LEN);
+                $chunk = substr($data, $i, $chunkLength);
+                $finish = ($dataLength - $i === $chunkLength);
+                if (!$server->push($fd, $chunk, WEBSOCKET_OPCODE_BINARY, $finish)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
     public function onMessage($server, $fd, $data) {
         $id = substr($data, 0, 4);
         $request = substr($data, 4);
@@ -46,13 +63,13 @@ class Service extends \Hprose\Swoole\Http\Service {
 
         $this->userFatalErrorHandler = function($error)
                 use ($self, $server, $fd, $id, $context) {
-            $server->push($fd, $id . $self->endError($error, $context), true);
+            $self->wsPush($server, $fd, $id . $self->endError($error, $context));
         };
 
         $response = $this->defaultHandle($request, $context);
 
-        $response->then(function($response) use ($server, $fd, $id) {
-            $server->push($fd, $id . $response, WEBSOCKET_OPCODE_BINARY, true);
+        $response->then(function($response) use ($self, $server, $fd, $id) {
+            $self->wsPush($server, $fd, $id . $response);
         });
     }
     public function wsHandle($server) {
