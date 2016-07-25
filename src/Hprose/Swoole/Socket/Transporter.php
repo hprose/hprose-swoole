@@ -33,6 +33,9 @@ abstract class Transporter {
         $this->client = $client;
         $this->uri = $client->uri;
     }
+    public function __destruct() {
+        $this->close();
+    }
     public function close() {
         foreach ($this->pool as $conn) {
             if (isset($conn->timer)) {
