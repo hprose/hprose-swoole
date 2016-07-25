@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole websocket client library for php 5.3+    *
  *                                                        *
- * LastModified: Jul 20, 2016                             *
+ * LastModified: Jul 25, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -122,10 +122,7 @@ class Client extends \Hprose\Client {
         if (filter_var($this->host, FILTER_VALIDATE_IP) === false) {
             $ip = gethostbyname($this->host);
             if ($ip === $this->host) {
-                $onError = $this->onError;
-                if (is_callable($onError)) {
-                    call_user_func($onError, 'gethostbyname', 'dns lookup failed');
-                }
+                throw new Exception('DNS lookup failed');
             }
             else {
                 $this->ip = $ip;
@@ -237,7 +234,7 @@ class Client extends \Hprose\Client {
             }, function($e) {
                 return $e instanceof TimeoutException;
             });
-            
+
         }
         if ($count < 100) {
             ++$count;
