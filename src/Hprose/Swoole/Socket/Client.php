@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole socket client library for php 5.3+       *
  *                                                        *
- * LastModified: Jul 15, 2016                             *
+ * LastModified: Jul 25, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -100,6 +100,16 @@ class Client extends \Hprose\Client {
                     break;
                 default:
                     throw new Exception("Only support tcp, tcp4, tcp6 or unix scheme");
+            }
+            if (($this->type === SWOOLE_SOCK_TCP) &&
+                (filter_var($this->host, FILTER_VALIDATE_IP) === false)) {
+                $ip = gethostbyname($this->host);
+                if ($ip === $this->host) {
+                    throw new Exception('DNS lookup failed');
+                }
+                else {
+                    $this->host = $ip;
+                }
             }
             $this->close();
         }
