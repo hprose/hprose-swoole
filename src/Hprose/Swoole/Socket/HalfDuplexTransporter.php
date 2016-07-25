@@ -86,6 +86,7 @@ class HalfDuplexTransporter extends Transporter {
             if ($conn->errCode !== 0) {
                 $future->reject(new Exception(socket_strerror($conn->errCode)));
             }
+            $self->size--;
         };
         $header = pack('N', strlen($request));
         $conn->send($header);
@@ -109,7 +110,8 @@ class HalfDuplexTransporter extends Transporter {
                 $onclose = $conn->onclose;
                 $onclose($conn);
             });
-            $conn->on('error', function($conn) use ($future) {
+            $conn->on('error', function($conn) use ($self, $future) {
+                $self->size--;
                 $future->reject(new Exception(socket_strerror($conn->errCode)));
             });
             $conn->on('connect', function($conn) use ($self, $request, $future, $context) {
