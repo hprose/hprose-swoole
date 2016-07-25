@@ -1,0 +1,14 @@
+{
+    "name": "hprose/hprose-swoole-examples",
+    "description": "examples of hprose-swoole",
+    "authors": [
+        {
+            "name": "andot",
+            "email": "mabingyao@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "hprose/hprose-swoole": "dev-master"
+    }
+}

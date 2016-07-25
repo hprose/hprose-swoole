@@ -2,5 +2,5 @@ temp
 vendor
 composer.phar
 composer.lock
-/netbeans
-/nbproject
+netbeans
+nbproject
