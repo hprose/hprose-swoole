@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole client library for php 5.3+              *
  *                                                        *
- * LastModified: Jul 20, 2016                             *
+ * LastModified: Jul 26, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -47,10 +47,9 @@ class Client {
         self::tryRegisterClientFactory("wss", "\\Hprose\\Swoole\\WebSocket\\Client");
         self::$clientFactoriesInited = true;
     }
-    private $realClient = null;
-    public function __construct($uris) {
+    public static function create($uris) {
         if (!self::$clientFactoriesInited) self::initClientFactories();
-        if (is_string($uris)) $uris = array($uris); 
+        if (is_string($uris)) $uris = array($uris);
         $scheme = strtolower(parse_url($uris[0], PHP_URL_SCHEME));
         $n = count($uris);
         for ($i = 1; $i < $n; ++$i) {
@@ -62,7 +61,11 @@ class Client {
         if (empty($clientFactory)) {
             throw new Exception("This client doesn't support $scheme scheme.");
         }
-        $this->realClient = new $clientFactory($uris);
+        return new $clientFactory($uris);
+    }
+    private $realClient = null;
+    public function __construct($uris) {
+        $this->realClient = self::create($uris);
     }
     public function __call($name, $args) {
         return call_user_func_array(array($this->realClient, $name), $args);
