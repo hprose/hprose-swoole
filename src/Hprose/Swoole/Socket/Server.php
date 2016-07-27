@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole socket server library for php 5.3+       *
  *                                                        *
- * LastModified: Jul 21, 2016                             *
+ * LastModified: Jul 27, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -26,6 +26,7 @@ use swoole_server;
 
 class Server extends Service {
     public $server;
+    public $settings = array();
     private function parseUrl($uri) {
         $result = new stdClass();
         $p = parse_url($uri);
@@ -64,6 +65,9 @@ class Server extends Service {
         parent::__construct();
         $url = $this->parseUrl($uri);
         $this->server = new swoole_server($url->host, $url->port, $mode, $url->type);
+    }
+    public function set($settings) {
+        $this->settings = array_replace($this->settings, $settings);
     }
     public function on($name, $callback) {
         $this->server->on($name, $callback);

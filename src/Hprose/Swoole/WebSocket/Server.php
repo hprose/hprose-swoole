@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole websocket server library for php 5.3+    *
  *                                                        *
- * LastModified: Jul 22, 2016                             *
+ * LastModified: Jul 27, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -26,6 +26,8 @@ use Exception;
 use swoole_websocket_server;
 
 class Server extends Service {
+    public $server;
+    public $settings = array();
     private function parseUrl($uri) {
         $result = new stdClass();
         $p = parse_url($uri);
@@ -52,6 +54,9 @@ class Server extends Service {
         parent::__construct();
         $url = $this->parseUrl($uri);
         $this->server = new swoole_websocket_server($url->host, $url->port, $mode);
+    }
+    public function set($settings) {
+        $this->settings = array_replace($this->settings, $settings);
     }
     public function on($name, $callback) {
         $this->server->on($name, $callback);
