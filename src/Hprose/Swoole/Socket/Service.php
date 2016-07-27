@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole socket service library for php 5.3+      *
  *                                                        *
- * LastModified: Jul 21, 2016                             *
+ * LastModified: Jul 27, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -38,20 +38,25 @@ class Service extends \Hprose\Service {
     public function set($settings) {
         $this->settings = array_replace($this->settings, $settings);
     }
+    private function send($server, $socket, $data) {
+        if ($server->exist($socket)) {
+            return $server->send($socket, $data);
+        }
+    }
     public function socketSend($server, $socket, $data, $id) {
         $dataLength = strlen($data);
         if ($id === null) {
-            $server->send($socket, pack("N", $dataLength));
+            $this->send($server, $socket, pack("N", $dataLength));
         }
         else {
-            $server->send($socket, pack("NN", $dataLength | 0x80000000, $id));
+            $this->send($server, $socket, pack("NN", $dataLength | 0x80000000, $id));
         }
         if ($dataLength <= self::MAX_PACK_LEN) {
-            return $server->send($socket, $data);
+            return $this->send($server, $socket, $data);
         }
         else {
             for ($i = 0; $i < $dataLength; $i += self::MAX_PACK_LEN) {
-                if (!$server->send($socket, substr($data, $i, min($dataLength - $i, self::MAX_PACK_LEN)))) {
+                if (!$this->send($server, $socket, substr($data, $i, min($dataLength - $i, self::MAX_PACK_LEN)))) {
                     return false;
                 }
             }
