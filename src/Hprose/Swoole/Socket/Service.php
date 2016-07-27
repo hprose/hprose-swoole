@@ -42,6 +42,7 @@ class Service extends \Hprose\Service {
         if ($server->exist($socket)) {
             return $server->send($socket, $data);
         }
+        return false;
     }
     public function socketSend($server, $socket, $data, $id) {
         $dataLength = strlen($data);
