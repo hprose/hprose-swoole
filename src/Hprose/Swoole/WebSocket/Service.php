@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole websocket service library for php 5.3+   *
  *                                                        *
- * LastModified: Jul 22, 2016                             *
+ * LastModified: Jul 27, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -33,17 +33,23 @@ class Service extends \Hprose\Swoole\Http\Service {
         parent::__construct();
         $this->timer = new Timer();
     }
+    private function push($server, $fd, $data, $opcode, $finish) {
+        if ($server->exist($fd)) {
+            return $server->push($fd, $data, $opcode, $finish);
+        }
+        return false;
+    }
     /*private*/ function wsPush($server, $fd, $data) {
         $dataLength = strlen($data);
         if ($dataLength <= self::MAX_PACK_LEN) {
-            return $server->push($fd, $data, WEBSOCKET_OPCODE_BINARY, true);
+            return $this->push($server, $fd, $data, WEBSOCKET_OPCODE_BINARY, true);
         }
         else {
             for ($i = 0; $i < $dataLength; $i += self::MAX_PACK_LEN) {
                 $chunkLength = min($dataLength - $i, self::MAX_PACK_LEN);
                 $chunk = substr($data, $i, $chunkLength);
                 $finish = ($dataLength - $i === $chunkLength);
-                if (!$server->push($fd, $chunk, WEBSOCKET_OPCODE_BINARY, $finish)) {
+                if (!$this->push($server, $fd, $chunk, WEBSOCKET_OPCODE_BINARY, $finish)) {
                     return false;
                 }
             }
