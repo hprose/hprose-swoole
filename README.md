@@ -36,6 +36,8 @@ Through *Hprose*, You can conveniently and efficiently intercommunicate between 
 
 This project is the implementation of Hprose for PHP based on swoole.
 
+More Documents for Hprose 2.0: https://github.com/hprose/hprose-php/wiki
+
 ## Installation
 
 ### Download Source Code

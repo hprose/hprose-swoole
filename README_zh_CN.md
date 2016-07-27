@@ -36,6 +36,8 @@
 
 本项目是基于 swoole 扩展的 Hprose 的 PHP 语言版本实现。
 
+Hprose 2.0 更多文档: https://github.com/hprose/hprose-php/wiki 
+
 ## 安装
 
 ### 通过下载源码
