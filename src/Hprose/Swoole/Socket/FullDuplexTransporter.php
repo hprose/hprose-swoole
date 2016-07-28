@@ -14,7 +14,7 @@
  *                                                        *
  * hprose socket FullDuplexTransporter class for php 5.3+ *
  *                                                        *
- * LastModified: Jul 14, 2016                             *
+ * LastModified: Jul 28, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -57,13 +57,16 @@ class FullDuplexTransporter extends Transporter {
             }
         };
         $conn->on('close', function($conn) use ($self) {
+            $futures = $conn->futures;
             if ($conn->errCode !== 0) {
-                $futures = $conn->futures;
                 $error = new Exception(socket_strerror($conn->errCode));
-                foreach ($futures as $id => $future) {
-                    $self->clean($conn, $id);
-                    $future->reject($error);
-                }
+            }
+            else {
+                $error = new Exception('The server is closed.');
+            }
+            foreach ($futures as $id => $future) {
+                $self->clean($conn, $id);
+                $future->reject($error);
             }
             $self->size--;
         });

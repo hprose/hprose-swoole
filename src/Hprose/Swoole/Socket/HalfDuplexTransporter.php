@@ -14,7 +14,7 @@
  *                                                        *
  * hprose socket HalfDuplexTransporter class for php 5.3+ *
  *                                                        *
- * LastModified: Jul 14, 2016                             *
+ * LastModified: Jul 28, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -86,6 +86,9 @@ class HalfDuplexTransporter extends Transporter {
             if ($conn->errCode !== 0) {
                 $future->reject(new Exception(socket_strerror($conn->errCode)));
             }
+            else {
+                $future->reject(new Exception('The server is closed.'));
+            }
             $self->size--;
         };
         $header = pack('N', strlen($request));
@@ -104,6 +107,9 @@ class HalfDuplexTransporter extends Transporter {
                 $self->clean($conn);
                 if ($conn->errCode !== 0) {
                     $future->reject(new Exception(socket_strerror($conn->errCode)));
+                }
+                else {
+                    $future->reject(new Exception('The server is closed.'));
                 }
             };
             $conn->on('close', function($conn) {
