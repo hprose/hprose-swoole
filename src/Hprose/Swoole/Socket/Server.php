@@ -28,6 +28,7 @@ class Server extends Service {
     public $server;
     public $settings = array();
     public $noDelay = true;
+    private $type;
     private function parseUrl($uri) {
         $result = new stdClass();
         $p = parse_url($uri);
@@ -65,6 +66,7 @@ class Server extends Service {
     public function __construct($uri, $mode = SWOOLE_BASE) {
         parent::__construct();
         $url = $this->parseUrl($uri);
+        $this->type = $url->type;
         $this->server = new swoole_server($url->host, $url->port, $mode, $url->type);
     }
     public function setNoDelay($value) {
@@ -87,7 +89,9 @@ class Server extends Service {
         return $this->server->listen($host, $port, $type);
     }
     public function start() {
-        $this->settings['open_tcp_nodelay'] = $this->noDelay;
+        if ($this->type !== SWOOLE_UNIX_STREAM) {
+            $this->settings['open_tcp_nodelay'] = $this->noDelay;
+        }
         $this->settings['open_eof_check'] = false;
         $this->settings['open_length_check'] = false;
         $this->settings['open_eof_split'] = false;
