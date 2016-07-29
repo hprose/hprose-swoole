@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole socket server library for php 5.3+       *
  *                                                        *
- * LastModified: Jul 27, 2016                             *
+ * LastModified: Jul 29, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -27,6 +27,7 @@ use swoole_server;
 class Server extends Service {
     public $server;
     public $settings = array();
+    public $noDelay = true;
     private function parseUrl($uri) {
         $result = new stdClass();
         $p = parse_url($uri);
@@ -66,6 +67,12 @@ class Server extends Service {
         $url = $this->parseUrl($uri);
         $this->server = new swoole_server($url->host, $url->port, $mode, $url->type);
     }
+    public function setNoDelay($value) {
+        $this->noDelay = $value;
+    }
+    public function isNoDelay() {
+        return $this->noDelay;
+    }
     public function set($settings) {
         $this->settings = array_replace($this->settings, $settings);
     }
@@ -80,9 +87,11 @@ class Server extends Service {
         return $this->server->listen($host, $port, $type);
     }
     public function start() {
-        if (is_array($this->settings) && !empty($this->settings)) {
-            $this->server->set($this->settings);
-        }
+        $this->settings['open_tcp_nodelay'] = $this->noDelay;
+        $this->settings['open_eof_check'] = false;
+        $this->settings['open_length_check'] = false;
+        $this->settings['open_eof_split'] = false;
+        $this->server->set($this->settings);
         $this->socketHandle($this->server);
         $this->server->start();
     }

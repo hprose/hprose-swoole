@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole socket client library for php 5.3+       *
  *                                                        *
- * LastModified: Jul 25, 2016                             *
+ * LastModified: Jul 29, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -32,6 +32,7 @@ class Client extends \Hprose\Client {
     public $fullDuplex = false;
     public $maxPoolSize = 10;
     public $poolTimeout = 30000;
+    public $noDelay = true;
     public $settings = array();
     private $fdtrans;
     private $hdtrans;
@@ -56,6 +57,12 @@ class Client extends \Hprose\Client {
     }
     public function isFullDuplex() {
         return $this->fullDuplex;
+    }
+    public function setNoDelay($value) {
+        $this->noDelay = $value;
+    }
+    public function isNoDelay() {
+        return $this->noDelay;
     }
     public function setMaxPoolSize($value) {
         $this->maxPoolSize = $value;
