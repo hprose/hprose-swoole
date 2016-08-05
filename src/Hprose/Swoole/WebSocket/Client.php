@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole websocket client library for php 5.3+    *
  *                                                        *
- * LastModified: Jul 25, 2016                             *
+ * LastModified: Aug 6, 2016                              *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -69,7 +69,7 @@ class Client extends \Hprose\Client {
             unset($this->header['Keep-Ailve']);
         }
     }
-    public function getKeepAlive() {
+    public function isKeepAlive() {
         return $this->keepAlive;
     }
     public function setKeepAliveTimeout($timeout) {
