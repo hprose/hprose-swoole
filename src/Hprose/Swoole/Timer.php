@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole Timer class for php 5.3+                 *
  *                                                        *
- * LastModified: Jul 21, 2016                             *
+ * LastModified: Aug 10, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -27,5 +27,8 @@ class Timer {
     }
     public function clearTimeout($timerid) {
         return swoole_timer_clear($timerid);
+    }
+    public function setImmediate($callback) {
+        swoole_event_defer($callback);
     }
 }
