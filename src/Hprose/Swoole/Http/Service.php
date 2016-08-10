@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole http service library for php 5.3+        *
  *                                                        *
- * LastModified: Jul 27, 2016                             *
+ * LastModified: Aug 10, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -22,12 +22,21 @@
 namespace Hprose\Swoole\Http;
 
 use Hprose\Swoole\Timer;
+use DateTime;
 
 class Service extends \Hprose\Http\Service {
     const ORIGIN = 'origin';
     const MAX_PACK_LEN = 0x200000;
+    private $crossDomainXmlFile = null;
+    private $crossDomainXmlContent = null;
+    private $clientAccessPolicyXmlFile = null;
+    private $clientAccessPolicyXmlContent = null;
+    private $lastModified;
+    private $etag;
     public function __construct() {
         parent::__construct();
+        $this->lastModified = (new DateTime()).format(DateTime::RFC2822);
+        $this->etag = '"' . dechex(mt_rand()) . ':' . dechex(mt_rand()) . '"';
         $this->timer = new Timer();
     }
     public function header($name, $value, $context) {
@@ -63,6 +72,81 @@ class Service extends \Hprose\Http\Service {
     }
     public function isPost($context) {
         return $context->request->server['request_method'] == 'POST';
+    }
+    public function getCrossDomainXmlFile() {
+        return $this->crossDomainXmlFile;
+    }
+    public function setCrossDomainXmlFile($value) {
+        $this->crossDomainXmlFile = $value;
+        $this->crossDomainXmlContent = file_get_contents($value);
+    }
+    public function getCrossDomainXmlContent() {
+        return $this->crossDomainXmlContent;
+    }
+    public function setCrossDomainXmlContent($value) {
+        $this->crossDomainXmlFile = null;
+        $this->crossDomainXmlContent = $value;
+    }
+    public function getClientAccessPolicyXmlFile() {
+        return $this->clientAccessPolicyXmlFile;
+    }
+    public function setClientAccessPolicyXmlFile($value) {
+        $this->clientAccessPolicyXmlFile = $value;
+        $this->clientAccessPolicyXmlContent = file_get_contents($value);
+    }
+    public function getClientAccessPolicyXmlContent() {
+        return $this->clientAccessPolicyXmlContent;
+    }
+    public function setClientAccessPolicyXmlContent($value) {
+        $this->clientAccessPolicyXmlFile = null;
+        $this->clientAccessPolicyXmlContent = $value;
+    }
+    private function crossDomainXmlHandler($request, $response) {
+        if ($request->server['path_info'] === '/crossdomain.xml') {
+            if ($request->header['if-modified-since'] === $this->lastModified &&
+                $request->headers['if-none-match'] === $this->etag) {
+                $response->status(304);
+            }
+            else {
+                $response->header('Last-Modified', $this->lastModified);
+                $response->header('Etag', $this->etag);
+                $response->header('Content-Type', 'text/xml');
+                $response->header('Content-Length', strlen($this->crossDomainXmlContent));
+                $response->write($this->crossDomainXmlContent);
+            }
+            $response->end();
+            return true;
+        }
+        return false;
+    }
+    private function clientAccessPolicyXmlHandler($request, $response) {
+        if ($request->server['path_info'] === '/clientaccesspolicy.xml') {
+            if ($request->header['if-modified-since'] === $this->lastModified &&
+                $request->headers['if-none-match'] === $this->etag) {
+                $response->status(304);
+            }
+            else {
+                $response->header('Last-Modified', $this->lastModified);
+                $response->header('Etag', $this->etag);
+                $response->header('Content-Type', 'text/xml');
+                $response->header('Content-Length', strlen($this->clientAccessPolicyXmlContent));
+                $response->write($this->clientAccessPolicyXmlContent);
+            }
+            $response->end();
+            return true;
+        }
+        return false;
+    }
+    public function handle($request = null, $response = null) {
+        if ($this->clientAccessPolicyXmlContent !== null &&
+            $this->clientAccessPolicyXmlHandler($request, $response)) {
+            return $response;
+        }
+        if ($this->crossDomainXmlContent !== null &&
+            $this->crossDomainXmlHandler($request, $response)) {
+            return $response;
+        }
+        return parent::handle($request, $response);
     }
     public function httpHandle($server) {
         $server->on('request', array($this, 'handle'));
