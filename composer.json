@@ -46,7 +46,7 @@
     ],
     "require": {
         "php": ">=5.3.0",
-        "hprose/hprose": ">=2.0.8",
+        "hprose/hprose": ">=2.0.9",
         "ext-swoole": ">=1.8.8"
     },
     "suggest": {
