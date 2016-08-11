@@ -35,7 +35,7 @@ class Service extends \Hprose\Http\Service {
     private $etag;
     public function __construct() {
         parent::__construct();
-        $this->lastModified = (new DateTime()).format(DateTime::RFC2822);
+        $this->lastModified = (new DateTime())->format(DateTime::RFC2822);
         $this->etag = '"' . dechex(mt_rand()) . ':' . dechex(mt_rand()) . '"';
         $this->timer = new Timer();
     }
