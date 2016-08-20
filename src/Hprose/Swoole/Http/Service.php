@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole http service library for php 5.3+        *
  *                                                        *
- * LastModified: Aug 10, 2016                             *
+ * LastModified: Aug 20, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -35,7 +35,8 @@ class Service extends \Hprose\Http\Service {
     private $etag;
     public function __construct() {
         parent::__construct();
-        $this->lastModified = (new DateTime())->format(DateTime::RFC2822);
+        $now = new DateTime();
+        $this->lastModified = $now->format(DateTime::RFC2822);
         $this->etag = '"' . dechex(mt_rand()) . ':' . dechex(mt_rand()) . '"';
         $this->timer = new Timer();
     }
