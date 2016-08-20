@@ -22,7 +22,6 @@
 namespace Hprose\Swoole\Http;
 
 use Hprose\Swoole\Timer;
-use DateTime;
 
 class Service extends \Hprose\Http\Service {
     const ORIGIN = 'origin';
@@ -35,8 +34,7 @@ class Service extends \Hprose\Http\Service {
     private $etag;
     public function __construct() {
         parent::__construct();
-        $now = new DateTime();
-        $this->lastModified = $now->format(DateTime::RFC2822);
+        $this->lastModified = gmstrftime("%a, %d %b %Y %T %Z", time());
         $this->etag = '"' . dechex(mt_rand()) . ':' . dechex(mt_rand()) . '"';
         $this->timer = new Timer();
     }
