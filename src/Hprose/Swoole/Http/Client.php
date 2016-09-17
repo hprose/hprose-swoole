@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole http client library for php 5.3+         *
  *                                                        *
- * LastModified: Aug 6, 2016                              *
+ * LastModified: Sep 17, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -34,12 +34,14 @@ class Client extends \Hprose\Client {
     public $ssl = false;
     public $keepAlive = true;
     public $keepAliveTimeout = 300;
-    public $maxConnection = 10;
+    public $poolTimeout = 30000;
+    public $maxPoolSize = 10;
     public $header = array();
-    private $count = 0;
-    private $requests = array();
+    private $trans;
+    // private $requests = array();
     public function __construct($uris = null) {
         parent::__construct($uris);
+        $this->trans = new Transporter($this);
     }
     public function setHeader($name, $value) {
         $lname = strtolower($name);
@@ -76,11 +78,17 @@ class Client extends \Hprose\Client {
     public function getKeepAliveTimeout() {
         return $this->keepAliveTimeout;
     }
-    public function setMaxConnection($value) {
-        $this->maxConnection = $value;
+    public function setMaxPoolSize($value) {
+        $this->maxPoolSize = $value;
     }
-    public function getMaxConnection() {
-        return $this->maxConnection;
+    public function getMaxPoolSize() {
+        return $this->maxPoolSize;
+    }
+    public function setPoolTimeout($value) {
+        $this->poolTimeout = $value;
+    }
+    public function getPoolTimeout() {
+        return $this->poolTimeout;
     }
     public function getHost() {
         return $this->host;
@@ -145,50 +153,54 @@ class Client extends \Hprose\Client {
         But PHP 5.3 can't call private method in closure,
         so we comment the private keyword.
     */
-    /*private*/ function privateSendAndReceive($request, stdClass $context, Future $future) {
-        $self = $this;
-        $requests = &$this->requests;
-        $count = &$this->count;
-        if ($count < $this->maxConnection) {
-            $count++;
-            $cli = new swoole_http_client($this->ip, $this->port, $this->ssl);
-            $cli->on('error', function($cli) use ($future) {
-                $future->reject(new Exception(socket_strerror($cli->errCode)));
-            });
-            $cli->set(array('keep_alive' => $this->keepAlive,
-                            'timeout' => $context->timeout / 1000));
-            $cli->setHeaders($this->header);
-            $cli->setCookies($this->cookies);
-            $cli->post($this->path, $request, function($cli) use ($self, $future, &$requests, &$count) {
-                $self->cookies = $cli->cookies;
-                if ($cli->errCode === 0) {
-                    if ($cli->statusCode == 200) {
-                        $future->resolve($cli->body);
-                    }
-                    else {
-                        $future->reject(new Exception($cli->body));
-                    }
-                }
-                else {
-                    $future->reject(new Exception(socket_strerror($cli->errCode)));
-                }
-                $count--;
-                if (!empty($requests) && $count < $self->maxConnection) {
-                    $request = array_pop($requests);
-                    swoole_event_defer(function() use ($self, $request, $cli) {
-                        $cli->close();
-                        $self->privateSendAndReceive($request[0], $request[1], $request[2]);
-                    });
-                }
-            });
-        }
-        else {
-            $requests[] = array($request, $context, $future);
-        }
-    }
+    // /*private*/ function privateSendAndReceive($request, stdClass $context, Future $future) {
+    //     $self = $this;
+    //     $requests = &$this->requests;
+    //     $count = &$this->count;
+    //     if ($count < $this->maxConnection) {
+    //         $count++;
+    //         $cli = new swoole_http_client($this->ip, $this->port, $this->ssl);
+    //         $cli->on('error', function($cli) use ($future) {
+    //             $future->reject(new Exception(socket_strerror($cli->errCode)));
+    //         });
+    //         $cli->setHeaders($this->header);
+    //         $cli->setCookies($this->cookies);
+    //         $cli->set(array('keep_alive' => $this->keepAlive,
+    //                         'timeout' => $context->timeout / 1000));
+    //         $cli->post($this->path, $request,
+    //         function($cli) use ($self, $future, &$requests, &$count) {
+    //             $self->cookies = $cli->cookies;
+    //             if ($cli->errCode === 0) {
+    //                 if ($cli->statusCode == 200) {
+    //                     $future->resolve($cli->body);
+    //                 }
+    //                 else {
+    //                     $future->reject(new Exception($cli->body));
+    //                 }
+    //             }
+    //             else {
+    //                 $future->reject(new Exception(socket_strerror($cli->errCode)));
+    //             }
+    //             $count--;
+    //             if (!empty($requests) && $count < $self->maxConnection) {
+    //                 $request = array_pop($requests);
+    //                 swoole_event_defer(function() use ($self, $request, $cli) {
+    //                     $cli->close();
+    //                     $self->privateSendAndReceive($request[0], $request[1], $request[2]);
+    //                 });
+    //             }
+    //         });
+    //     }
+    //     else {
+    //         $requests[] = array($request, $context, $future);
+    //     }
+    // }
     protected function sendAndReceive($request, stdClass $context) {
         $future = new Future();
-        $this->privateSendAndReceive($request, $context, $future);
+        $this->trans->sendAndReceive($request, $future, $context);
+        if ($context->oneway) {
+            $future->resolve(null);
+        }
         return $future;
     }
 }
