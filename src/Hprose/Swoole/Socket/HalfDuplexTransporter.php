@@ -71,11 +71,10 @@ class HalfDuplexTransporter extends Transporter {
         $timeout = $context->timeout;
         if ($timeout > 0) {
             $conn->timeoutId = swoole_timer_after($timeout, function() use ($self, $future, $conn) {
-                $self->clean($conn);
+                $future->reject(new TimeoutException('timeout'));
                 if ($conn->isConnected()) {
                     $conn->close();
                 }
-                $future->reject(new TimeoutException('timeout'));
             });
         }
         $conn->onreceive = function($conn, $data) use ($self, $future) {
