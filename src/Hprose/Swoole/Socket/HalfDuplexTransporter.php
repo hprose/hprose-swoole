@@ -14,7 +14,7 @@
  *                                                        *
  * hprose socket HalfDuplexTransporter class for php 5.3+ *
  *                                                        *
- * LastModified: Jul 28, 2016                             *
+ * LastModified: Sep 17, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -72,7 +72,9 @@ class HalfDuplexTransporter extends Transporter {
         if ($timeout > 0) {
             $conn->timeoutId = swoole_timer_after($timeout, function() use ($self, $future, $conn) {
                 $self->clean($conn);
-                $self->recycle($conn);
+                if ($conn->isConnected()) {
+                    $conn->close();
+                }
                 $future->reject(new TimeoutException('timeout'));
             });
         }
