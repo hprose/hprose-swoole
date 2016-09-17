@@ -14,7 +14,7 @@
  *                                                        *
  * hprose socket Transporter class for php 5.3+           *
  *                                                        *
- * LastModified: Jul 29, 2016                             *
+ * LastModified: Sep 17, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -83,7 +83,8 @@ abstract class Transporter {
     public function create() {
         $client = $this->client;
         $conn = new swoole_client($client->type, SWOOLE_SOCK_ASYNC);
-        // I don't know why the type is changed after new swoole_client.
+        // The type is changed after new swoole_client in old version swoole.
+        // The new version swoole is fixed this bug.
         $client->type &= 0xFF;
         if ($client->type !== SWOOLE_UNIX_STREAM) {
             $client->settings['open_tcp_nodelay'] = $client->noDelay;
