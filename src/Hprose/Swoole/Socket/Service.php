@@ -85,6 +85,7 @@ class Service extends \Hprose\Service {
                     $context = new stdClass();
                     $context->server = $server;
                     $context->socket = $socket;
+                    $context->fd = $socket;
                     $context->fromid = $fromid;
                     $context->userdata = new stdClass();
                     $data = substr($bytes, $headerLength, $dataLength);
@@ -113,6 +114,7 @@ class Service extends \Hprose\Service {
             $context = new stdClass();
             $context->server = $server;
             $context->socket = $socket;
+            $context->fd = $socket;
             $context->fromid = $fromid;
             $context->userdata = new stdClass();
             try {
@@ -129,6 +131,7 @@ class Service extends \Hprose\Service {
             $context = new stdClass();
             $context->server = $server;
             $context->socket = $socket;
+            $context->fd = $socket;
             $context->fromid = $fromid;
             $context->userdata = new stdClass();
             try {
