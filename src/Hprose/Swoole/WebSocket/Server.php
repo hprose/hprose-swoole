@@ -55,7 +55,7 @@ class Server extends Service {
     public function __construct($uri, $mode = SWOOLE_BASE) {
         parent::__construct();
         $url = $this->parseUrl($uri);
-        $this->server = new swoole_websocket_server($url->host, $url->port, $mode, $result->type);
+        $this->server = new swoole_websocket_server($url->host, $url->port, $mode, $url->type);
     }
     public function set($settings) {
         $this->settings = array_replace($this->settings, $settings);
