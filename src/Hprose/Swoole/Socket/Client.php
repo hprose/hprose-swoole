@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole socket client library for php 5.3+       *
  *                                                        *
- * LastModified: Jul 29, 2016                             *
+ * LastModified: Nov 16, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -87,16 +87,20 @@ class Client extends \Hprose\Client {
             switch (strtolower($p['scheme'])) {
                 case 'tcp':
                 case 'tcp4':
-                case 'ssl':
-                case 'sslv2':
-                case 'sslv3':
-                case 'tls':
                     $this->type = SWOOLE_SOCK_TCP;
                     $this->host = $p['host'];
                     $this->port = $p['port'];
                     break;
                 case 'tcp6':
                     $this->type = SWOOLE_SOCK_TCP6;
+                    $this->host = $p['host'];
+                    $this->port = $p['port'];
+                    break;
+                case 'ssl':
+                case 'sslv2':
+                case 'sslv3':
+                case 'tls':
+                    $this->type = SWOOLE_SOCK_TCP | SWOOLE_SSL;
                     $this->host = $p['host'];
                     $this->port = $p['port'];
                     break;
@@ -108,7 +112,7 @@ class Client extends \Hprose\Client {
                 default:
                     throw new Exception("Only support tcp, tcp4, tcp6 or unix scheme");
             }
-            if (($this->type === SWOOLE_SOCK_TCP) &&
+            if ((($this->type & ~SWOOLE_SSL) === SWOOLE_SOCK_TCP) &&
                 (filter_var($this->host, FILTER_VALIDATE_IP) === false)) {
                 $ip = gethostbyname($this->host);
                 if ($ip === $this->host) {

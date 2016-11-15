@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole websocket server library for php 5.3+    *
  *                                                        *
- * LastModified: Jul 27, 2016                             *
+ * LastModified: Nov 16, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -36,10 +36,12 @@ class Server extends Service {
                 case 'ws':
                     $result->host = $p['host'];
                     $result->port = isset($p['port']) ? $p['port'] : 80;
+                    $result->type = SWOOLE_SOCK_TCP;
                     break;
                 case 'wss':
                     $result->host = $p['host'];
                     $result->port = isset($p['port']) ? $p['port'] : 443;
+                    $result->type = SWOOLE_SOCK_TCP | SWOOLE_SSL;
                     break;
                 default:
                     throw new Exception("Can't support this scheme: {$p['scheme']}");
@@ -53,7 +55,7 @@ class Server extends Service {
     public function __construct($uri, $mode = SWOOLE_BASE) {
         parent::__construct();
         $url = $this->parseUrl($uri);
-        $this->server = new swoole_websocket_server($url->host, $url->port, $mode);
+        $this->server = new swoole_websocket_server($url->host, $url->port, $mode, $result->type);
     }
     public function set($settings) {
         $this->settings = array_replace($this->settings, $settings);

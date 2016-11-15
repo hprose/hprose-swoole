@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole http client library for php 5.3+         *
  *                                                        *
- * LastModified: Sep 17, 2016                             *
+ * LastModified: Nov 16, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -148,53 +148,6 @@ class Client extends \Hprose\Client {
         });
         return $future;
     }
-    /*
-        This method is a private method.
-        But PHP 5.3 can't call private method in closure,
-        so we comment the private keyword.
-    */
-    // /*private*/ function privateSendAndReceive($request, stdClass $context, Future $future) {
-    //     $self = $this;
-    //     $requests = &$this->requests;
-    //     $count = &$this->count;
-    //     if ($count < $this->maxConnection) {
-    //         $count++;
-    //         $cli = new swoole_http_client($this->ip, $this->port, $this->ssl);
-    //         $cli->on('error', function($cli) use ($future) {
-    //             $future->reject(new Exception(socket_strerror($cli->errCode)));
-    //         });
-    //         $cli->setHeaders($this->header);
-    //         $cli->setCookies($this->cookies);
-    //         $cli->set(array('keep_alive' => $this->keepAlive,
-    //                         'timeout' => $context->timeout / 1000));
-    //         $cli->post($this->path, $request,
-    //         function($cli) use ($self, $future, &$requests, &$count) {
-    //             $self->cookies = $cli->cookies;
-    //             if ($cli->errCode === 0) {
-    //                 if ($cli->statusCode == 200) {
-    //                     $future->resolve($cli->body);
-    //                 }
-    //                 else {
-    //                     $future->reject(new Exception($cli->body));
-    //                 }
-    //             }
-    //             else {
-    //                 $future->reject(new Exception(socket_strerror($cli->errCode)));
-    //             }
-    //             $count--;
-    //             if (!empty($requests) && $count < $self->maxConnection) {
-    //                 $request = array_pop($requests);
-    //                 swoole_event_defer(function() use ($self, $request, $cli) {
-    //                     $cli->close();
-    //                     $self->privateSendAndReceive($request[0], $request[1], $request[2]);
-    //                 });
-    //             }
-    //         });
-    //     }
-    //     else {
-    //         $requests[] = array($request, $context, $future);
-    //     }
-    // }
     protected function sendAndReceive($request, stdClass $context) {
         $future = new Future();
         $this->trans->sendAndReceive($request, $future, $context);
