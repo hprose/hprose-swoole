@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole websocket client library for php 5.3+    *
  *                                                        *
- * LastModified: Aug 6, 2016                              *
+ * LastModified: Nov 18, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -210,11 +210,7 @@ class Client extends \Hprose\Client {
         });
     }
     protected function sendAndReceive($request, stdClass $context) {
-        if (!$this->connecting && ($this->ws === null || !$this->ws->isConnected())) {
-            $this->connect();
-        }
         $future = new Future();
-        $ws = $this->ws;
         $id = $this->getNextId();
         $count = &$this->count;
         $futures = &$this->futures;
@@ -236,6 +232,10 @@ class Client extends \Hprose\Client {
             });
 
         }
+        if (!$this->connecting && ($this->ws === null || !$this->ws->isConnected())) {
+            $this->connect();
+        }
+        $ws = $this->ws;
         if ($count < 100) {
             ++$count;
             $this->ready->then(function() use ($ws, $id, $request, &$futures) {
