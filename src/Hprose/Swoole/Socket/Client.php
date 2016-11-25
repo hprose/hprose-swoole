@@ -112,7 +112,8 @@ class Client extends \Hprose\Client {
                 default:
                     throw new Exception("Only support tcp, tcp4, tcp6 or unix scheme");
             }
-            if ((($this->type & ~SWOOLE_SSL) === SWOOLE_SOCK_TCP) &&
+            if ((($this->type === SWOOLE_SOCK_TCP) ||
+                 ($this->type === SWOOLE_SOCK_TCP | SWOOLE_SSL)) &&
                 (filter_var($this->host, FILTER_VALIDATE_IP) === false)) {
                 $ip = gethostbyname($this->host);
                 if ($ip === $this->host) {
