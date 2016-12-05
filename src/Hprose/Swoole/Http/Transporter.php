@@ -14,7 +14,7 @@
  *                                                        *
  * hprose http Transporter class for php 5.3+             *
  *                                                        *
- * LastModified: Sep 17, 2016                             *
+ * LastModified: Dec 5, 2016                              *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -101,10 +101,12 @@ class Transporter {
                 }
             });
         }
+        $conn->setHeaders($context->httpHeader);
         $conn->setCookies($this->cookies);
         $conn->post($this->client->path, $request,
-        function($conn) use ($self, $future) {
+        function($conn) use ($self, $future, $context) {
             $self->cookies = $conn->cookies;
+            $context->httpHeader = $conn->header;
             if ($conn->errCode === 0) {
                 if ($conn->statusCode == 200) {
                     $future->resolve($conn->body);
