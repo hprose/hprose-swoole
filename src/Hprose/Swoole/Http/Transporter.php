@@ -14,7 +14,7 @@
  *                                                        *
  * hprose http Transporter class for php 5.3+             *
  *                                                        *
- * LastModified: Dec 5, 2016                              *
+ * LastModified: Dec 11, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -39,7 +39,16 @@ class Transporter {
     }
     public function create() {
         $client = $this->client;
-        $conn = new swoole_http_client($client->host, $client->port, $client->ssl);
+        if (filter_var($client->host, FILTER_VALIDATE_IP) === false) {
+            $ip = gethostbyname($client->host);
+            if ($ip === $client->host) {
+                throw new Exception('DNS lookup failed');
+            }
+        }
+        else {
+            $ip = $client->host;
+        }
+        $conn = new swoole_http_client($ip, $client->port, $client->ssl);
         $this->size++;
         return $conn;
     }
@@ -101,12 +110,23 @@ class Transporter {
                 }
             });
         }
-        $conn->setHeaders($context->httpHeader);
+        $header = array(
+            'Host' => $this->client->host
+        );
+        foreach ($this->client->header as $name => $value) {
+            $header[$name] = $value;
+        }
+        if (isset($context->httpHeader) && is_array($context->httpHeader)) {
+            foreach ($context->httpHeader as $name => $value) {
+                $header[$name] = $value;
+            }
+        }
+        $conn->setHeaders($header);
         $conn->setCookies($this->cookies);
         $conn->post($this->client->path, $request,
         function($conn) use ($self, $future, $context) {
             $self->cookies = $conn->cookies;
-            $context->httpHeader = $conn->header;
+            $context->httpHeader = $conn->headers;
             if ($conn->errCode === 0) {
                 if ($conn->statusCode == 200) {
                     $future->resolve($conn->body);
