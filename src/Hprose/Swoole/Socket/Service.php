@@ -14,7 +14,7 @@
  *                                                        *
  * hprose swoole socket service library for php 5.3+      *
  *                                                        *
- * LastModified: Jul 27, 2016                             *
+ * LastModified: Dec 15, 2016                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -144,8 +144,13 @@ class Service extends \Hprose\Service {
             catch (Throwable $e) {}
         });
         $server->on("receive", function ($server, $socket, $fromid, $data) use(&$onReceives) {
-            $onReceive = $onReceives[$socket];
-            $onReceive($server, $socket, $fromid, $data);
+            if (isset($onReceives[$socket])) {
+                $onReceive = $onReceives[$socket];
+                $onReceive($server, $socket, $fromid, $data);
+            }
+            else {
+                $server->close($socket, true);
+            }
         });
     }
 }
