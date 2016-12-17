@@ -56,7 +56,9 @@ More Documents for Hprose 2.0: https://github.com/hprose/hprose-php/wiki
 
 ## Usage
 
-You need install [swoole](http://www.swoole.com/) first. The minimum version of [swoole](https://github.com/swoole/swoole-src) been supported is 1.8.8.
+You need to install [swoole](http://www.swoole.com/) first. The minimum version of [swoole](https://github.com/swoole/swoole-src) been supported is 1.8.8.
+
+You also need to install [hprose-pecl](https://pecl.php.net/package/hprose) 1.6.5+.
 
 ### Server
 
