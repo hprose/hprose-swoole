@@ -85,6 +85,7 @@ class Service extends \Hprose\Swoole\Http\Service {
             }
             $context = new stdClass();
             $context->server = $server;
+            $context->request = $request;
             $context->fd = $fd;
             $context->userdata = new stdClass();
             try {
