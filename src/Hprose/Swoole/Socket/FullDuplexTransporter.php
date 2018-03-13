@@ -14,7 +14,7 @@
  *                                                        *
  * hprose socket FullDuplexTransporter class for php 5.3+ *
  *                                                        *
- * LastModified: Jul 28, 2016                             *
+ * LastModified: Mar 13, 2018                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -32,8 +32,10 @@ class FullDuplexTransporter extends Transporter {
             $conn = array_pop($this->pool);
             if ($conn->isConnected()) {
                 if ($conn->count === 0) {
-                    swoole_timer_clear($conn->timer);
-                    $conn->timer = null;
+                    if (isset($conn->timer)) {
+                        swoole_timer_clear($conn->timer);
+                        unset($conn->timer);
+                    }
                     $conn->wakeup();
                 }
                 return $conn;
@@ -74,7 +76,10 @@ class FullDuplexTransporter extends Transporter {
     public function recycle($conn) {
         $conn->sleep();
         $conn->timer = swoole_timer_after($this->client->poolTimeout, function() use ($conn) {
-            swoole_timer_clear($conn->timer);
+            if (isset($conn->timer)) {
+                swoole_timer_clear($conn->timer);
+                unset($conn->timer);
+            }
             if ($conn->isConnected()) {
                 $conn->close();
             }

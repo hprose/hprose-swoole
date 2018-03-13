@@ -14,7 +14,7 @@
  *                                                        *
  * hprose socket HalfDuplexTransporter class for php 5.3+ *
  *                                                        *
- * LastModified: Sep 17, 2016                             *
+ * LastModified: Mar 13, 2018                             *
  * Author: Ma Bingyao <andot@hprose.com>                  *
  *                                                        *
 \**********************************************************/
@@ -30,8 +30,10 @@ class HalfDuplexTransporter extends Transporter {
         while (!empty($this->pool)) {
             $conn = array_pop($this->pool);
             if ($conn->isConnected()) {
-                swoole_timer_clear($conn->timer);
-                $conn->timer = null;
+                if (isset($conn->timer)) {
+                    swoole_timer_clear($conn->timer);
+                    unset($conn->timer);
+                }
                 $conn->wakeup();
                 return $conn;
             }
@@ -42,7 +44,10 @@ class HalfDuplexTransporter extends Transporter {
         if (array_search($conn, $this->pool, true) === false) {
             $conn->sleep();
             $conn->timer = swoole_timer_after($this->client->poolTimeout, function() use ($conn) {
-                swoole_timer_clear($conn->timer);
+                if (isset($conn->timer)) {
+                    swoole_timer_clear($conn->timer);
+                    unset($conn->timer);
+                }
                 if ($conn->isConnected()) {
                     $conn->close();
                 }
