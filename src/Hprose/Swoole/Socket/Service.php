@@ -111,15 +111,15 @@ class Service extends \Hprose\Service {
         $onReceives = array();
         $server->on('connect', function($server, $socket, $fromid) use ($self, &$onReceives) {
             $onReceives[$socket] = $self->getOnReceive();
-            $context = new stdClass();
-            $context->server = $server;
-            $context->socket = $socket;
-            $context->fd = $socket;
-            $context->fromid = $fromid;
-            $context->userdata = new stdClass();
             try {
                 $onAccept = $self->onAccept;
                 if (is_callable($onAccept)) {
+                    $context           = new stdClass();
+                    $context->server   = $server;
+                    $context->socket   = $socket;
+                    $context->fd       = $socket;
+                    $context->fromid   = $fromid;
+                    $context->userdata = new stdClass();
                     call_user_func($onAccept, $context);
                 }
             }
@@ -128,15 +128,15 @@ class Service extends \Hprose\Service {
         });
         $server->on('close', function($server, $socket, $fromid) use ($self, &$onReceives) {
             unset($onReceives[$socket]);
-            $context = new stdClass();
-            $context->server = $server;
-            $context->socket = $socket;
-            $context->fd = $socket;
-            $context->fromid = $fromid;
-            $context->userdata = new stdClass();
             try {
                 $onClose = $self->onClose;
                 if (is_callable($onClose)) {
+                    $context           = new stdClass();
+                    $context->server   = $server;
+                    $context->socket   = $socket;
+                    $context->fd       = $socket;
+                    $context->fromid   = $fromid;
+                    $context->userdata = new stdClass();
                     call_user_func($onClose, $context);
                 }
             }

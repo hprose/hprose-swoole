@@ -83,14 +83,14 @@ class Service extends \Hprose\Swoole\Http\Service {
             if (isset($buffers[$fd])) {
                 unset($buffers[$fd]);
             }
-            $context = new stdClass();
-            $context->server = $server;
-            $context->request = $request;
-            $context->fd = $fd;
-            $context->userdata = new stdClass();
             try {
                 $onAccept = $self->onAccept;
                 if (is_callable($onAccept)) {
+                    $context           = new stdClass();
+                    $context->server   = $server;
+                    $context->request  = $request;
+                    $context->fd       = $fd;
+                    $context->userdata = new stdClass();
                     call_user_func($onAccept, $context);
                 }
             }
@@ -101,13 +101,13 @@ class Service extends \Hprose\Swoole\Http\Service {
             if (isset($buffers[$fd])) {
                 unset($buffers[$fd]);
             }
-            $context = new stdClass();
-            $context->server = $server;
-            $context->fd = $fd;
-            $context->userdata = new stdClass();
             try {
                 $onClose = $self->onClose;
                 if (is_callable($onClose)) {
+                    $context           = new stdClass();
+                    $context->server   = $server;
+                    $context->fd       = $fd;
+                    $context->userdata = new stdClass();
                     call_user_func($onClose, $context);
                 }
             }
