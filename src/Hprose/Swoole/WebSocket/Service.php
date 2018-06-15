@@ -53,11 +53,11 @@ class Service extends \Hprose\Swoole\Http\Service {
             return true;
         }
     }
-    public function onMessage($server, $fd, $data) {
+    public function onMessage($server, $fd, $data, $context = null) {
         $id = substr($data, 0, 4);
         $request = substr($data, 4);
 
-        $context = new stdClass();
+        if ($context === null) $context = new stdClass();
         $context->server = $server;
         $context->fd = $fd;
         $context->id = $id;
