@@ -32,7 +32,6 @@ class Service extends \Hprose\Http\Service {
     private $clientAccessPolicyXmlContent = null;
     private $lastModified;
     private $etag;
-    protected $cleanHandleOutput = false;
     public function __construct() {
         parent::__construct();
         $this->lastModified = gmstrftime("%a, %d %b %Y %T %Z", time());
