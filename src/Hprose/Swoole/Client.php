@@ -21,6 +21,8 @@
 
 namespace Hprose\Swoole;
 
+use Exception;
+
 class Client {
     private static $clientFactories = array();
     private static $clientFactoriesInited = false;
