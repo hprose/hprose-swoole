@@ -21,6 +21,8 @@
 
 namespace Hprose\Swoole;
 
+use Exception;
+
 class Server {
     private $server = null;
     public function __construct($uri, $mode = SWOOLE_BASE) {

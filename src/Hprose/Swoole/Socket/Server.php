@@ -22,6 +22,7 @@
 namespace Hprose\Swoole\Socket;
 
 use stdClass;
+use Exception;
 use swoole_server;
 
 class Server extends Service {
